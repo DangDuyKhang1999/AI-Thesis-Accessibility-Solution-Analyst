@@ -1,102 +1,67 @@
-# Đặc tả dự án AI Accessibility Solution Analyst
+---
+id: SPEC-accessibility-solution-analyst
+sources:
+  - references/project-request.md
+companions: []
+---
 
-**Cập nhật:** 2026-08-03  
-**Trạng thái:** Đặc tả mục tiêu cho MVP nghiên cứu, đã đối chiếu với source hiện tại
+# Đặc tả hệ thống AI Accessibility Solution Analyst
 
-## 1. Bối cảnh và vấn đề
+## Why
 
-Dashboard, bảng thống kê, biểu đồ, sơ đồ và ảnh chụp giao diện doanh nghiệp chứa
-quan hệ không gian mà screen reader tuyến tính khó truyền đạt. Dự án hướng tới
-chuyển nội dung trực quan đó thành mô tả có cấu trúc, ngắn gọn và có thể nghe
-được, ưu tiên nhân viên khiếm thị sử dụng tiếng Việt.
+Nhân viên khiếm thị gặp khó khăn khi sử dụng dashboard, tài liệu kỹ thuật, ERD,
+bảng thống kê, biểu đồ và giao diện doanh nghiệp vì screen reader chủ yếu đọc
+văn bản theo thứ tự tuyến tính, không truyền đạt được cấu trúc dữ liệu và bố cục.
+Hệ thống phải chuyển nội dung trực quan đó thành mô tả có cấu trúc và âm thanh.
 
-## 2. Mục tiêu sản phẩm
+## Capabilities
 
-Người dùng tải lên một ảnh tài liệu hoặc giao diện; hệ thống phân tích ảnh bằng
-mô hình đa phương thức, tạo mô tả tiếng Việt phù hợp TTS và phát âm thanh ngay
-trong trình duyệt.
+- **CAP-1 — Tiếp nhận nội dung doanh nghiệp**
+  - **intent:** Người dùng có thể cung cấp tài liệu hoặc ảnh giao diện doanh nghiệp bằng tiếng Anh, Nhật hoặc Việt.
+  - **success:** Hệ thống tiếp nhận được mẫu dashboard, tài liệu kỹ thuật, ERD, bảng thống kê, biểu đồ hoặc giao diện và chuyển sang bước phân tích.
 
-## 3. Phạm vi MVP
+- **CAP-2 — Phân tích nội dung và bố cục**
+  - **intent:** Hệ thống dùng LLM để phân tích nội dung, quan hệ không gian và cấu trúc của tài liệu hoặc giao diện.
+  - **success:** Kết quả phân tích nêu được chủ đề chính, các vùng thông tin và quan hệ cần thiết để hiểu đầu vào.
 
-### Baseline đang có
+- **CAP-3 — Nhận diện thành phần trực quan**
+  - **intent:** Hệ thống nhận diện bảng dữ liệu, biểu đồ, sơ đồ và layout giao diện.
+  - **success:** Với đầu vào có thành phần thuộc bốn nhóm, kết quả xác định đúng loại và thông tin chính của từng thành phần.
 
-Source hiện tại đã triển khai một ứng dụng Streamlit nguyên khối trong
-`streamlit_app.py`: nhận một ảnh, gọi Gemini, làm sạch mô tả tiếng Việt và tạo
-audio qua chuỗi fallback Hugging Face → giọng Việt cục bộ → gTTS. Đây là baseline
-để phát triển tiếp, không phải kiến trúc đích.
+- **CAP-4 — Sinh mô tả tự nhiên có cấu trúc**
+  - **intent:** Hệ thống chuyển kết quả phân tích thành mô tả ngôn ngữ tự nhiên thể hiện được cấu trúc thay vì chỉ đọc văn bản tuyến tính.
+  - **success:** Người nghe có thể biết nội dung chính, thứ tự, nhóm, nhãn, quan hệ và điểm nổi bật mà không cần nhìn đầu vào.
 
-### Chức năng bắt buộc
+- **CAP-5 — Xử lý đa ngôn ngữ**
+  - **intent:** Hệ thống xử lý input Anh–Nhật–Việt và tạo mô tả đầu ra bằng tiếng Anh hoặc tiếng Việt.
+  - **success:** Mỗi ngôn ngữ input đều tạo được mô tả Anh hoặc Việt mà vẫn giữ nguyên dữ kiện và cấu trúc quan trọng.
 
-- Nhận một ảnh PNG, JPEG hoặc WebP trong mỗi lượt xử lý.
-- Hiển thị ảnh xem trước và trạng thái xử lý rõ ràng.
-- Sinh mô tả tiếng Việt không dùng Markdown hoặc ký hiệu gây khó nghe qua TTS.
-- Không bịa nội dung; vùng không nhận diện được phải được nêu rõ.
-- Hiển thị văn bản để người dùng kiểm tra và phát audio trên trang.
-- Lấy credential từ biến môi trường, không lưu bí mật trong mã nguồn.
-- Có thông báo dễ hiểu khi thiếu cấu hình hoặc dịch vụ ngoài thất bại.
+- **CAP-6 — Chuyển mô tả thành âm thanh**
+  - **intent:** Người dùng có thể nghe mô tả đã tạo để tiếp cận nội dung mà không cần nhìn màn hình.
+  - **success:** Mô tả Anh hoặc Việt được chuyển thành audio có thể phát và nghe trực tiếp.
 
-### Chưa thuộc MVP hiện tại
+## Constraints
 
-- PDF nhiều trang, nhiều ảnh trong một phiên và phân tích luồng nhiều màn hình.
-- Input Nhật/Anh, dịch đầu ra Anh/Việt và lựa chọn ngôn ngữ.
-- Docling/OCR chuyên dụng, schema Pydantic và cơ chế tự sửa đầu ra.
-- Tài khoản, lưu lịch sử, phân quyền và triển khai production.
+- Đối tượng phục vụ chính là nhân viên khiếm thị trong bối cảnh doanh nghiệp.
+- Input phải bao phủ tiếng Anh, Nhật và Việt; output phải hỗ trợ tiếng Anh và Việt.
+- Mô tả phải truyền đạt cấu trúc của dữ liệu hoặc bố cục, không chỉ chép lại OCR.
+- LLM là thành phần phân tích và diễn giải trung tâm của pipeline.
 
-## 4. Kiến trúc mục tiêu gần
+## Non-goals
 
-Luồng gồm năm ranh giới độc lập: tiếp nhận input, phân tích thị giác, chuẩn hóa
-mô tả, tổng hợp giọng nói và trình bày kết quả. Giao diện Streamlit chỉ điều
-phối; logic nghiệp vụ cần được tách thành module để kiểm thử mà không gọi mạng.
-Gemini là bộ phân tích hiện tại. TTS ưu tiên dịch vụ Hugging Face, sau đó giọng
-Việt cục bộ và gTTS; chiến lược này cần được biểu diễn rõ bằng trạng thái nguồn
-audio và lỗi tương ứng.
+- Bảo mật production, tối ưu hiệu năng, tài khoản, phân quyền, CI/CD và triển khai thương mại không phải mục tiêu chính của đặc tả này.
+- Không khóa cứng nhà cung cấp LLM, OCR hoặc TTS khi yêu cầu gốc chưa chỉ định.
+- Không mở rộng sang các ngôn ngữ input/output ngoài Anh–Nhật–Việt và Anh–Việt.
 
-## 5. Yêu cầu phi chức năng
+## Success signal
 
-- Accessibility: thao tác bàn phím, nhãn điều khiển rõ, focus hợp lý, thông báo
-  trạng thái có thể đọc bởi screen reader và không phụ thuộc riêng vào màu sắc.
-- Bảo mật: key chỉ đến từ môi trường/secrets; log không chứa key hoặc dữ liệu ảnh.
-- Kiểm thử: logic thuần có unit test; tích hợp API được cô lập ở adapter; có bộ
-  ảnh chuẩn để đánh giá lặp lại.
-- Khả năng tái lập: khóa phiên bản môi trường và ghi lại model/prompt khi đánh giá.
-- Riêng tư: ảnh chỉ được giữ trong bộ nhớ trong lượt xử lý, trừ khi người dùng
-  chủ động yêu cầu lưu.
+Trong một demo hoàn chỉnh, người dùng đưa vào các mẫu doanh nghiệp đại diện cho
+bảng, biểu đồ, sơ đồ và layout bằng ba ngôn ngữ nguồn; hệ thống tạo mô tả có cấu
+trúc bằng Anh hoặc Việt và phát được audio giúp người nghe hiểu nội dung chính
+cùng quan hệ trực quan mà không xem bản gốc.
 
-## 6. Tiêu chí nghiệm thu MVP nghiên cứu
+## Open Questions
 
-1. Cài mới từ README và chạy được bằng một lệnh Streamlit.
-2. Không có credential thật trong Git; secret cũ đã được thu hồi và thay mới.
-3. Happy case ảnh mẫu tạo được văn bản tiếng Việt và audio.
-4. Thiếu API key, ảnh sai định dạng và lỗi nhà cung cấp đều có thông báo xác định.
-5. Unit test bao phủ chuẩn hóa văn bản, MIME, lỗi cấu hình và lựa chọn TTS fallback.
-6. Bộ đánh giá có ít nhất 20 ảnh thuộc bảng, biểu đồ và giao diện; kết quả được
-   chấm theo độ đúng dữ kiện, độ đầy đủ cấu trúc, mức bịa và khả năng nghe hiểu.
-7. Kiểm thử thủ công với keyboard và ít nhất một screen reader được ghi nhận.
-
-## 7. Ma trận yêu cầu và trạng thái
-
-| Nhóm yêu cầu | Trạng thái hiện tại | Bằng chứng/Ghi chú |
-| --- | --- | --- |
-| Upload một ảnh và preview | Đã có | `streamlit_app.py` |
-| Gemini sinh mô tả tiếng Việt | Đã có happy case | Cần `GEMINI_API_KEY` và mạng |
-| Văn bản thuần tối ưu TTS | Có một phần | Có làm sạch ký hiệu và chuẩn hóa số lớn |
-| Phát audio trên web | Đã có happy case | HF/local/gTTS fallback |
-| Secret qua môi trường | Đã đạt ở source hiện tại | Credential nằm trong `.env` bị Git ignore; vẫn nên thu hồi key từng bị lộ |
-| Xử lý lỗi có cấu trúc | Một phần | UI hiện gom nhiều lỗi vào exception tổng quát |
-| Unit test nghiệp vụ | Chưa có | 4 test hiện tại chỉ kiểm tra vệ sinh repo |
-| Keyboard/screen reader audit | Chưa có | Chưa có biên bản NVDA |
-| Dataset và đánh giá nghiên cứu | Chưa có | Mới có 2 ảnh mẫu, chưa có ground truth |
-| PDF/layout parsing/đa ngôn ngữ | Chưa có | Nằm ngoài MVP gần nhất |
-
-## 8. Câu hỏi nghiên cứu dự kiến
-
-- Mô tả do mô hình đa phương thức sinh ra cải thiện khả năng hiểu cấu trúc trực
-  quan bao nhiêu so với OCR/screen reader tuyến tính?
-- Prompt có cấu trúc và bước xác minh dữ kiện ảnh hưởng thế nào đến hallucination?
-- Độ dài và cấu trúc mô tả nào tối ưu cho việc nghe thay vì đọc?
-
-## 9. Nguồn hiện có
-
-Tài liệu gốc và bài báo tham khảo được bảo tồn tại `docs/references/`. Chúng là
-đầu vào định hướng; các tuyên bố về model, giá hoặc quota cần được xác minh lại
-tại thời điểm viết luận văn.
+- Ngoài ảnh chụp, định dạng tài liệu bắt buộc cho MVP là PDF, DOCX hay cả hai?
+- Ai sẽ đánh giá độ đúng của mô tả và khả năng nghe hiểu, theo thang đo nào?
+- Người dùng chọn ngôn ngữ output hay hệ thống tự quyết định theo ngữ cảnh?
