@@ -1,19 +1,13 @@
 from pathlib import Path
 import ast
-import subprocess
-import sys
 import unittest
 
 
 ROOT = Path(__file__).resolve().parents[1]
 
-# These entry points load credentials from the project .env file. The standalone
-# TTS helper is intentionally excluded: it accepts a token from its caller or
-# the process environment and must not discover secrets from source files.
 DOTENV_ENTRYPOINTS = (
     ROOT / "archive" / "happy-case-mvp" / "streamlit_app.py",
     ROOT / "archive" / "happy-case-mvp" / "run_happy_case.py",
-    ROOT / "scripts" / "legacy" / "run_happy_case.py",
 )
 
 
@@ -89,43 +83,18 @@ class RepositoryHygieneTests(unittest.TestCase):
         wrapper = (
             ROOT / "archive" / "happy-case-mvp" / "run_happy_case.py"
         ).read_text(encoding="utf-8")
-        legacy = ROOT / "scripts" / "legacy" / "run_happy_case.py"
 
         self.assertIn('PROJECT_ROOT = Path(__file__).resolve().parents[2]', wrapper)
         self.assertIn(
             'app_path = PROJECT_ROOT / "archive" / "happy-case-mvp" / "streamlit_app.py"',
             wrapper,
         )
-        result = subprocess.run(
-            [sys.executable, "-B", str(legacy), "--help"],
-            cwd=ROOT,
-            capture_output=True,
-            check=False,
-            text=True,
-        )
-        self.assertEqual(0, result.returncode, result.stderr)
-        self.assertIn("archive/happy-case-mvp/assets/samples/bar.png", result.stdout)
 
     def test_personal_bmad_config_is_ignored_and_scan_state_is_absent(self) -> None:
         ignore_rules = set((ROOT / ".gitignore").read_text(encoding="utf-8").splitlines())
 
         self.assertIn("_bmad/config.user.toml", ignore_rules)
         self.assertFalse((ROOT / "docs" / "project-scan-report.json").exists())
-
-    def test_legacy_cli_does_not_accept_api_keys_on_the_command_line(self) -> None:
-        legacy = (ROOT / "scripts" / "legacy" / "run_happy_case.py").read_text(
-            encoding="utf-8"
-        )
-
-        self.assertNotIn('"--api-key"', legacy)
-
-    def test_tts_helper_does_not_import_source_files_to_find_secrets(self) -> None:
-        helper = ROOT / "scripts" / "legacy" / "hf_inference_tts.py"
-        source = helper.read_text(encoding="utf-8")
-
-        self.assertNotIn("importlib.util", source)
-        self.assertNotIn("getattr(rc, \"HF_TOKEN\"", source)
-
 
 if __name__ == "__main__":
     unittest.main()

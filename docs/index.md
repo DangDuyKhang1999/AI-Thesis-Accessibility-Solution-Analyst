@@ -1,31 +1,41 @@
-# Chỉ mục tài liệu dự án
+# Project Documentation Index
 
-**Cập nhật:** 2026-08-03  
-**Loại dự án:** Monolith Python/Streamlit  
-**Entry point:** `archive/happy-case-mvp/streamlit_app.py`
+## Tổng quan nhanh
+
+- **Loại:** Python Streamlit monolith
+- **Entry point:** `app.py`
+- **Kiến trúc:** multimodal AI pipeline/service
+- **Trạng thái:** MVP chức năng; evaluation nghiên cứu chưa hoàn tất
+- **Cập nhật:** 2026-08-03 — narrative/voice có nhãn ngữ nghĩa, chống lặp dữ
+  kiện, UI tương phản đồng bộ và 32 test tự động
 
 ## Tài liệu chính
 
-- [Đặc tả sản phẩm](./spec.md) — phạm vi, yêu cầu và tiêu chí nghiệm thu.
-- [Kế hoạch triển khai](./plan.md) — các giai đoạn và ưu tiên thực hiện.
-- [Tiến độ hiện tại](./process.md) — phần trăm sơ bộ, bằng chứng, rủi ro và cách chạy.
-- [README](../README.md) — hướng dẫn khởi động nhanh.
+- **[architecture.md](./architecture.md)** - Kiến trúc pipeline và invariants
+- **[component-inventory.md](./component-inventory.md)** - Module, model và UI helpers
+- **[development-guide.md](./development-guide.md)** - Thiết lập, chạy và kiểm thử
+- **[plan.md](./plan.md)** - Việc hoàn thành và bước tiếp theo
+- **[process.md](./process.md)** - Tiến độ, bằng chứng và khoảng trống
+- **[project-overview.md](./project-overview.md)** - Mục tiêu và công nghệ hiện tại
+- **[source-tree-analysis.md](./source-tree-analysis.md)** - Cấu trúc repository có chú thích
+- **[spec.md](./spec.md)** - Đặc tả chuẩn theo yêu cầu đề tài
+- **[technology-stack.md](./technology-stack.md)** - Tổng quan cách công nghệ giải quyết bài toán accessibility
 
-## Tài liệu tham khảo
+## Thiết kế và implementation plans
 
-- [Yêu cầu đề tài ban đầu](./references/project-request.md)
-- [Đề xuất MVP ban đầu](./references/original-mvp-proposal.md)
-- [Snapshot MVP ngày 2026-06-07](./references/mvp-happy-case-status-2026-06-07.md)
-- [Bài báo nghiên cứu](./references/research-paper.pdf)
+- **[Midnight Aurora design](./superpowers/specs/2026-08-03-midnight-aurora-ui-design.md)** - Glassmorphism accessibility UI
+- **[Production codebase design](./superpowers/specs/2026-08-03-production-codebase-design.md)** - Ranh giới archive và production
+- **[Midnight Aurora plan](./superpowers/plans/2026-08-03-midnight-aurora-ui.md)** - Kế hoạch triển khai giao diện
+- **[Production foundation plan](./superpowers/plans/2026-08-03-production-foundation.md)** - Archive và model foundation
 
-## Bắt đầu nhanh
+## Nguồn tham chiếu
 
-```powershell
-pip install -r requirements.txt
-Copy-Item .env.example .env
-# Điền GEMINI_API_KEY trong .env
-streamlit run archive/happy-case-mvp/streamlit_app.py
-```
+- **[project-request.md](./references/project-request.md)** - Yêu cầu gốc và phạm vi chính
+- **[original-mvp-proposal.md](./references/original-mvp-proposal.md)** - Đề xuất MVP ban đầu
+- **[mvp-happy-case-status-2026-06-07.md](./references/mvp-happy-case-status-2026-06-07.md)** - Snapshot MVP lịch sử
+- **[research-paper.pdf](./references/research-paper.pdf)** - Bài báo nghiên cứu tham khảo
 
-Xem `process.md` để biết quy trình cài virtual environment, cấu hình TTS tùy chọn,
-chạy test và sử dụng CLI legacy.
+## Bắt đầu
+
+Xem [development-guide.md](./development-guide.md), cấu hình `.env`, rồi chạy
+`streamlit run app.py`.

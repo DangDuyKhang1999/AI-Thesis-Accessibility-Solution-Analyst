@@ -25,8 +25,8 @@ tests/                        # Unit và integration tests
 ```
 
 `.env`, `.gitignore`, `requirements.txt` và `docs/` tiếp tục nằm tại root. Các
-script thử nghiệm cũ đang nằm trong `scripts/legacy/` được giữ nguyên vì chúng
-không thuộc Happy Case MVP đang hoạt động.
+script thử nghiệm trùng lặp đã bị xóa; toàn bộ Happy Case chỉ còn một bản trong
+`archive/happy-case-mvp/`.
 
 ## Ranh giới thành phần
 

@@ -1,33 +1,52 @@
 # AI Thesis Accessibility Solution Analyst
 
-Streamlit app for a single flow:
+Ứng dụng Streamlit chuyển ảnh và PDF doanh nghiệp thành mô tả chi tiết có cấu
+trúc và audio dành cho người khiếm thị.
 
-upload image -> generate Vietnamese plain-text description -> play audio directly in the browser.
+## Chức năng hiện tại
 
-## Files
+- Nhận PNG, JPEG, WebP và PDF nhiều trang.
+- AI tự nhận diện input tiếng Anh, Nhật hoặc Việt.
+- Người dùng chọn output tiếng Việt hoặc tiếng Anh.
+- Gemini nhận diện bảng, biểu đồ, sơ đồ và layout thành JSON có schema.
+- Lượt AI thứ hai tạo mô tả nghe hiểu được theo bốn đoạn ngữ nghĩa: `Tổng quan`,
+  `Số liệu chi tiết`, `Phân tích số liệu` và `Nhận định` (hoặc nhãn tiếng Anh).
+- Chuẩn hóa đầu ra đánh số `1–4` thành nhãn có nghĩa trước khi tạo audio và
+  tránh nối lại dữ kiện đã được diễn đạt bằng cách viết khác.
+- gTTS tạo audio theo ngôn ngữ output.
+- UI Midnight Aurora Glassmorphism responsive và tương phản cao.
 
-- `archive/happy-case-mvp/`: the preserved, runnable Happy Case MVP.
-- `docs/`: specification, roadmap, progress snapshot, and research references.
-- `scripts/legacy/`: preserved CLI and standalone TTS experiments.
-- `tests/`: repository-level safety and structure checks.
-
-## Run
+## Cài đặt và chạy
 
 ```powershell
-pip install -r requirements.txt
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
 Copy-Item .env.example .env
-# Mở .env và điền GEMINI_API_KEY; HF_TOKEN có thể để trống.
-streamlit run archive/happy-case-mvp/streamlit_app.py
+# Điền GEMINI_API_KEY trong .env
+streamlit run app.py
 ```
 
-Create `.env` from `.env.example` and put the real values there. The application
-loads this file automatically. `.env` and the local backup directory are ignored
-by Git; never put real credentials in `.env.example` or source code.
+Mặc định app mở tại `http://localhost:8501`.
 
-See `docs/index.md` for the documentation index and `docs/process.md` for the
-current progress estimate, detailed setup, test command, and legacy CLI usage.
+## Kiểm thử
 
-## Behavior
+```powershell
+$env:PYTHONPATH="src"
+python -B -m unittest discover -s tests -v
+python -B -m compileall -q app.py src
+```
 
-- No output text file is required for the web flow.
-- If Hugging Face inference is unavailable, the app falls back to a Vietnamese local voice when available, then to `gTTS`.
+Hiện có 32 unit/repository tests. Playwright được dùng cục bộ cho smoke test UI
+desktop/mobile nhưng chưa nằm trong `requirements.txt`.
+
+## Cấu trúc chính
+
+- `app.py`: entry point production.
+- `src/accessibility_analyst/`: input, model, analyzer, composer, TTS, pipeline và UI.
+- `archive/happy-case-mvp/`: MVP cũ được lưu để đối chiếu, không được production import.
+- `tests/`: unit test và repository hygiene.
+- `docs/`: đặc tả, kiến trúc, tiến độ và hướng dẫn phát triển.
+
+Key chỉ nằm trong `.env`; file này bị Git ignore. Xem [docs/index.md](docs/index.md)
+để truy cập toàn bộ tài liệu.
