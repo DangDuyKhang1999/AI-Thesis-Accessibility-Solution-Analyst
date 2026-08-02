@@ -7,6 +7,15 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 
+# These entry points load credentials from the project .env file. The standalone
+# TTS helper is intentionally excluded: it accepts a token from its caller or
+# the process environment and must not discover secrets from source files.
+DOTENV_ENTRYPOINTS = (
+    ROOT / "archive" / "happy-case-mvp" / "streamlit_app.py",
+    ROOT / "archive" / "happy-case-mvp" / "run_happy_case.py",
+    ROOT / "scripts" / "legacy" / "run_happy_case.py",
+)
+
 
 class RepositoryHygieneTests(unittest.TestCase):
     def test_happy_case_mvp_is_archived_and_root_entrypoint_is_released(self):
@@ -18,12 +27,7 @@ class RepositoryHygieneTests(unittest.TestCase):
         self.assertFalse((ROOT / "run_happy_case.py").exists())
 
     def test_active_sources_do_not_embed_credentials(self) -> None:
-        sources = [
-            ROOT / "archive" / "happy-case-mvp" / "streamlit_app.py",
-            ROOT / "archive" / "happy-case-mvp" / "run_happy_case.py",
-        ]
-
-        for source in sources:
+        for source in DOTENV_ENTRYPOINTS:
             tree = ast.parse(source.read_text(encoding="utf-8"), filename=str(source))
             embedded_names = {
                 target.id
@@ -36,12 +40,7 @@ class RepositoryHygieneTests(unittest.TestCase):
                 self.assertEqual(set(), embedded_names)
 
     def test_active_sources_load_dotenv(self) -> None:
-        sources = [
-            ROOT / "archive" / "happy-case-mvp" / "streamlit_app.py",
-            ROOT / "archive" / "happy-case-mvp" / "run_happy_case.py",
-        ]
-
-        for source in sources:
+        for source in DOTENV_ENTRYPOINTS:
             content = source.read_text(encoding="utf-8")
             with self.subTest(source=source):
                 self.assertTrue(

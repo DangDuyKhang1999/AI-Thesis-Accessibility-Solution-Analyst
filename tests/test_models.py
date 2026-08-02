@@ -3,6 +3,7 @@ import unittest
 from pydantic import ValidationError
 
 from accessibility_analyst.models import (
+    AccessibilityResult,
     ComponentType,
     LanguageCode,
     StructuredDescription,
@@ -36,3 +37,29 @@ class StructuredDescriptionTests(unittest.TestCase):
                 summary="",
                 components=[],
             )
+
+    def test_rejects_undeclared_fields(self):
+        with self.assertRaises(ValidationError):
+            StructuredDescription(
+                source_language=LanguageCode.ENGLISH,
+                target_language=LanguageCode.VIETNAMESE,
+                summary="Accessible chart summary.",
+                unexpected_field="must not be accepted",
+            )
+
+    def test_rejects_blank_visual_component_label(self):
+        with self.assertRaises(ValidationError):
+            VisualComponent(
+                component_type=ComponentType.CHART,
+                label="",
+            )
+
+    def test_rejects_blank_accessibility_result_rendered_text(self):
+        description = StructuredDescription(
+            source_language=LanguageCode.ENGLISH,
+            target_language=LanguageCode.VIETNAMESE,
+            summary="Accessible chart summary.",
+        )
+
+        with self.assertRaises(ValidationError):
+            AccessibilityResult(description=description, rendered_text="")
