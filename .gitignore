@@ -16,5 +16,6 @@ service-account*.json
 output/
 .pytest_cache/
 .coverage
+.worktrees/
 .DS_Store
 Thumbs.db
