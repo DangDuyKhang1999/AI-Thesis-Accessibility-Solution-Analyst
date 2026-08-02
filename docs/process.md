@@ -69,7 +69,7 @@ pip install -r requirements.txt
 ```powershell
 Copy-Item .env.example .env
 # Mở .env và điền GEMINI_API_KEY; HF_TOKEN là tùy chọn.
-streamlit run streamlit_app.py
+streamlit run archive/happy-case-mvp/streamlit_app.py
 ```
 
 Streamlit thường mở `http://localhost:8501`. Trên giao diện: chọn một ảnh PNG,
@@ -86,7 +86,7 @@ python -m unittest discover -s tests -v
 
 ```powershell
 Copy-Item .env.example .env # bỏ qua nếu .env đã tồn tại
-python run_happy_case.py --image "assets/samples/bar.png"
+python scripts/legacy/run_happy_case.py --image "archive/happy-case-mvp/assets/samples/bar.png"
 ```
 
 CLI ghi text/audio vào `output/`; thư mục này đã nằm trong `.gitignore`.
@@ -131,9 +131,9 @@ CLI ghi text/audio vào `output/`; thư mục này đã nằm trong `.gitignore`
 
 ## Bằng chứng trong repository
 
-- `streamlit_app.py`: web happy case và toàn bộ pipeline hiện tại.
+- `archive/happy-case-mvp/streamlit_app.py`: archived web happy case and pipeline.
 - `scripts/legacy/`: CLI ảnh → text/audio và thử nghiệm TTS cũ.
-- `assets/samples/`: hai ảnh dashboard mẫu.
+- `archive/happy-case-mvp/assets/samples/`: two sample dashboard images.
 - `docs/references/`: yêu cầu ban đầu, đề xuất MVP, trạng thái cũ và bài báo.
 - `tests/test_repository_hygiene.py`: kiểm tra tài liệu chuẩn, ignore và secret.
 - `_bmad/` và `.agents/skills/`: BMAD Core/BMM và skill tích hợp Codex.

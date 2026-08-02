@@ -2,7 +2,7 @@
 
 **Cập nhật:** 2026-08-03  
 **Loại dự án:** Monolith Python/Streamlit  
-**Entry point:** `streamlit_app.py`
+**Entry point:** `archive/happy-case-mvp/streamlit_app.py`
 
 ## Tài liệu chính
 
@@ -24,7 +24,7 @@
 pip install -r requirements.txt
 Copy-Item .env.example .env
 # Điền GEMINI_API_KEY trong .env
-streamlit run streamlit_app.py
+streamlit run archive/happy-case-mvp/streamlit_app.py
 ```
 
 Xem `process.md` để biết quy trình cài virtual environment, cấu hình TTS tùy chọn,

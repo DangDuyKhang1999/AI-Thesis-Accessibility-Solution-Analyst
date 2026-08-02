@@ -21,22 +21,22 @@ Copy-Item .env.example .env
 
 ## 3) Chay demo
 
-Chay nhanh voi anh mau da co san (`assets/samples/bar.png`):
+Chay nhanh voi anh mau da co san (`archive/happy-case-mvp/assets/samples/bar.png`):
 
 ```powershell
-python .\run_happy_case.py
+python .\scripts\legacy\run_happy_case.py
 ```
 
 Hoac truyen anh bat ky:
 
 ```powershell
-python .\run_happy_case.py --image "duong_dan_den_anh.png"
+python .\scripts\legacy\run_happy_case.py --image "duong_dan_den_anh.png"
 ```
 
 Neu muon doi file output:
 
 ```powershell
-python .\run_happy_case.py --image "duong_dan_den_anh.png" --out "output/mo_ta_vi.txt"
+python .\scripts\legacy\run_happy_case.py --image "duong_dan_den_anh.png" --out "output/mo_ta_vi.txt"
 ```
 
 ## 4) Ket qua

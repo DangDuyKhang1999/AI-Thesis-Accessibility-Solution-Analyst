@@ -6,9 +6,8 @@ upload image -> generate Vietnamese plain-text description -> play audio directl
 
 ## Files
 
-- `streamlit_app.py`: the web UI MVP.
+- `archive/happy-case-mvp/`: the preserved, runnable Happy Case MVP.
 - `docs/`: specification, roadmap, progress snapshot, and research references.
-- `assets/samples/`: sample dashboard images.
 - `scripts/legacy/`: preserved CLI and standalone TTS experiments.
 - `tests/`: repository-level safety and structure checks.
 
@@ -18,7 +17,7 @@ upload image -> generate Vietnamese plain-text description -> play audio directl
 pip install -r requirements.txt
 Copy-Item .env.example .env
 # Mở .env và điền GEMINI_API_KEY; HF_TOKEN có thể để trống.
-streamlit run streamlit_app.py
+streamlit run archive/happy-case-mvp/streamlit_app.py
 ```
 
 Create `.env` from `.env.example` and put the real values there. The application
