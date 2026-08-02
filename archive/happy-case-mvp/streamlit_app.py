@@ -9,7 +9,8 @@ from dotenv import load_dotenv
 from google import genai
 from google.genai import types
 
-load_dotenv(Path(__file__).resolve().parent / ".env")
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+load_dotenv(PROJECT_ROOT / ".env")
 st.set_page_config(page_title="Happy Case MVP", page_icon="🎧", layout="wide")
 st.markdown(
         """

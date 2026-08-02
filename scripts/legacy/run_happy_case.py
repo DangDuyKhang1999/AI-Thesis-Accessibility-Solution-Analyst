@@ -29,8 +29,11 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Happy case: 1 image -> Vietnamese description")
     parser.add_argument(
         "--image",
-        default="assets/samples/bar.png",
-        help="Path to image file (png/jpg/jpeg/webp). Default: assets/samples/bar.png",
+        default="archive/happy-case-mvp/assets/samples/bar.png",
+        help=(
+            "Path to image file (png/jpg/jpeg/webp). "
+            "Default: archive/happy-case-mvp/assets/samples/bar.png"
+        ),
     )
     parser.add_argument(
         "--out",

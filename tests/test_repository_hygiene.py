@@ -1,5 +1,7 @@
 from pathlib import Path
 import ast
+import subprocess
+import sys
 import unittest
 
 
@@ -7,10 +9,18 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class RepositoryHygieneTests(unittest.TestCase):
+    def test_happy_case_mvp_is_archived_and_root_entrypoint_is_released(self):
+        archive = ROOT / "archive" / "happy-case-mvp"
+        self.assertTrue((archive / "streamlit_app.py").is_file())
+        self.assertTrue((archive / "run_happy_case.py").is_file())
+        self.assertTrue((archive / "README.md").is_file())
+        self.assertFalse((ROOT / "streamlit_app.py").exists())
+        self.assertFalse((ROOT / "run_happy_case.py").exists())
+
     def test_active_sources_do_not_embed_credentials(self) -> None:
         sources = [
-            ROOT / "streamlit_app.py",
-            ROOT / "scripts" / "legacy" / "run_happy_case.py",
+            ROOT / "archive" / "happy-case-mvp" / "streamlit_app.py",
+            ROOT / "archive" / "happy-case-mvp" / "run_happy_case.py",
         ]
 
         for source in sources:
@@ -27,8 +37,8 @@ class RepositoryHygieneTests(unittest.TestCase):
 
     def test_active_sources_load_dotenv(self) -> None:
         sources = [
-            ROOT / "streamlit_app.py",
-            ROOT / "scripts" / "legacy" / "run_happy_case.py",
+            ROOT / "archive" / "happy-case-mvp" / "streamlit_app.py",
+            ROOT / "archive" / "happy-case-mvp" / "run_happy_case.py",
         ]
 
         for source in sources:
@@ -76,14 +86,26 @@ class RepositoryHygieneTests(unittest.TestCase):
             "requirements.txt must declare python-dotenv",
         )
 
-    def test_root_cli_resolves_relative_paths_from_project_root(self) -> None:
-        wrapper = (ROOT / "run_happy_case.py").read_text(encoding="utf-8")
-        legacy = (ROOT / "scripts" / "legacy" / "run_happy_case.py").read_text(
-            encoding="utf-8"
-        )
+    def test_archived_cli_resolves_streamlit_app_from_project_root(self) -> None:
+        wrapper = (
+            ROOT / "archive" / "happy-case-mvp" / "run_happy_case.py"
+        ).read_text(encoding="utf-8")
+        legacy = ROOT / "scripts" / "legacy" / "run_happy_case.py"
 
-        self.assertIn("cwd=root_dir", wrapper)
-        self.assertIn('default="assets/samples/bar.png"', legacy)
+        self.assertIn('PROJECT_ROOT = Path(__file__).resolve().parents[2]', wrapper)
+        self.assertIn(
+            'app_path = PROJECT_ROOT / "archive" / "happy-case-mvp" / "streamlit_app.py"',
+            wrapper,
+        )
+        result = subprocess.run(
+            [sys.executable, "-B", str(legacy), "--help"],
+            cwd=ROOT,
+            capture_output=True,
+            check=False,
+            text=True,
+        )
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertIn("archive/happy-case-mvp/assets/samples/bar.png", result.stdout)
 
     def test_personal_bmad_config_is_ignored_and_scan_state_is_absent(self) -> None:
         ignore_rules = set((ROOT / ".gitignore").read_text(encoding="utf-8").splitlines())
