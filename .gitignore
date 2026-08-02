@@ -1,0 +1,20 @@
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.env
+.env.*
+!.env.example
+.streamlit/
+AI Thesis & Accessibility Solution Analyst_BK/
+_bmad/config.user.toml
+_bmad-output/
+*.pem
+*.key
+credentials*.json
+service-account*.json
+output/
+.pytest_cache/
+.coverage
+.DS_Store
+Thumbs.db
