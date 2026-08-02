@@ -13,6 +13,7 @@
 - Input phải hỗ trợ tiếng Anh, Nhật và Việt; output phải hỗ trợ tiếng Anh và Việt.
 - Model phải biểu diễn bảng dữ liệu, biểu đồ, sơ đồ và layout giao diện.
 - Mô tả phải giữ cấu trúc, quan hệ và điểm nổi bật, không chỉ chứa OCR tuyến tính.
+- Các yêu cầu về input Anh–Nhật–Việt, output Anh/Việt và schema mô tả có cấu trúc chỉ áp dụng cho code production mới trong `src/`. `archive/happy-case-mvp/` được miễn các yêu cầu này và phải giữ nguyên hành vi Happy Case MVP cũ.
 - Key chỉ được đọc từ `.env` ở project root và không được đưa vào archive hoặc Git.
 - Code production không được import module từ `archive/`.
 
