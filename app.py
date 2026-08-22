@@ -31,7 +31,7 @@ with controls:
         uploaded = st.file_uploader("Ảnh hoặc PDF", type=["png", "jpg", "jpeg", "webp", "pdf"])
         render_status("AI tự nhận diện tiếng Anh, Nhật hoặc Việt từ nội dung.")
         target_label = st.selectbox("Ngôn ngữ mô tả và audio", list(output_labels))
-        analyze_clicked = st.button("Phân tích tài liệu", type="primary", use_container_width=True)
+        analyze_clicked = st.button("Phân tích tài liệu", type="primary", width="stretch")
 
 document = None
 input_error = None
@@ -109,10 +109,10 @@ with inspector:
         if document:
             st.subheader(f"Toàn cảnh · {len(document.pages)} trang")
             with st.container(key="document_stage"):
-                st.image(document.pages[0].data, use_container_width=True)
-            with st.popover("Mở ảnh lớn", use_container_width=True):
+                st.image(document.pages[0].data, width="stretch")
+            with st.popover("Mở ảnh lớn", width="stretch"):
                 st.caption(f"{uploaded.name} · Trang 1/{len(document.pages)}")
-                st.image(document.pages[0].data, use_container_width=True)
+                st.image(document.pages[0].data, width="stretch")
         elif input_error:
             st.error(input_error)
         else:

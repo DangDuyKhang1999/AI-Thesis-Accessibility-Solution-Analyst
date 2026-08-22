@@ -6,6 +6,8 @@ __pycache__/
 .env.*
 !.env.example
 .streamlit/
+/.streamlit.*.log
+/.superpowers/
 AI Thesis & Accessibility Solution Analyst_BK/
 _bmad/config.user.toml
 _bmad-output/
