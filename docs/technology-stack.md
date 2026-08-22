@@ -19,8 +19,8 @@ Hệ thống được chia thành năm tầng công nghệ:
 | --- | --- | --- |
 | Tiếp nhận tài liệu | Streamlit, PyMuPDF | Nhận ảnh/PDF và đưa mọi trang về dạng hình ảnh thống nhất để AI có thể xử lý |
 | Hiểu nội dung trực quan | Gemini multimodal | Nhận diện ngôn ngữ, bảng, biểu đồ, sơ đồ, bố cục, nhãn, số liệu và quan hệ |
-| Chuẩn hóa thông tin | JSON có schema, Pydantic | Biến kết quả AI thành cấu trúc kiểm tra được, hạn chế đầu ra tùy ý hoặc thiếu định dạng |
-| Diễn giải dễ nghe | Gemini text generation và hậu xử lý ngôn ngữ | Chuyển dữ liệu có cấu trúc thành tổng quan, số liệu, phân tích và nhận định; hạn chế lặp và số thứ tự khó hiểu |
+| Chuẩn hóa thông tin | JSON text, `json.loads`, Pydantic | Kiểm tra response parse được và khớp hình dạng/enum đã khai báo; không xác minh nội dung với ảnh |
+| Diễn giải dễ nghe | Gemini text generation và heuristic hậu xử lý | Yêu cầu narrative có nhãn, rồi thay marker/nối dữ liệu chưa khớp theo chuỗi hoặc token |
 | Cung cấp khả năng tiếp cận | gTTS, giao diện Streamlit | Chuyển nội dung cuối thành MP3 và cho phép đọc/nghe/đối chiếu trên cùng giao diện |
 
 ## Vì sao cần hai lượt AI
@@ -34,38 +34,39 @@ việc bỏ sót số liệu, lặp nội dung hoặc suy diễn sai. Thay vào 
 - Lượt thứ hai tập trung vào **diễn đạt**: biến dữ liệu đã chuẩn hóa thành lời tự
   nhiên phù hợp với người nghe.
 
-Cách tách này giúp đánh giá độc lập hai vấn đề: AI có đọc đúng dữ liệu hay không,
-và phần mô tả có dễ nghe, dễ hiểu hay không.
+Cách tách này tạo ranh giới để **có thể** đánh giá độc lập extraction và
+narrative. Repository hiện chưa có dataset/rubric thực hiện hai phép đánh giá đó.
 
 ## Vai trò của từng công nghệ chính
 
 ### Gemini multimodal
 
-Gemini đảm nhiệm phần khó nhất mà OCR thông thường không giải quyết được: hiểu
-ý nghĩa trực quan. Ngoài chữ, mô hình cần xác định đâu là bảng, biểu đồ, sơ đồ,
-vùng giao diện; đồng thời giữ lại số liệu, đơn vị, xu hướng, thứ bậc và so sánh.
-Gemini cũng tự phát hiện đầu vào tiếng Anh, Nhật hoặc Việt.
+Gemini được dùng cho phần mà OCR tuyến tính không biểu diễn: suy luận về ý nghĩa
+trực quan. Prompt yêu cầu mô hình xác định bảng, biểu đồ, sơ đồ, vùng giao diện;
+giữ số liệu, đơn vị, xu hướng, thứ bậc, so sánh; đồng thời chọn mã nguồn Anh,
+Nhật hoặc Việt. Độ đúng của các kết quả này chưa được kiểm chứng độc lập.
 
-### JSON schema và Pydantic
+### JSON text và Pydantic
 
-LLM có thể trả lời linh hoạt nhưng hệ thống cần đầu ra ổn định. Lớp schema buộc
-kết quả phân tích phải có ngôn ngữ, loại thành phần, dữ kiện và quan hệ rõ ràng.
-Nếu kết quả sai cấu trúc, hệ thống từ chối thay vì tiếp tục tạo một bản audio khó
-kiểm chứng.
+Prompt yêu cầu Gemini trả đúng một JSON object và SDK cấu hình MIME
+`application/json`; code không truyền SDK response schema. `response.text` được
+`json.loads`, sau đó Pydantic kiểm tra enum, field dư và các constraint đã khai
+báo. Kết quả parse/schema lỗi làm pipeline dừng trước composition, nhưng kết quả
+hợp schema vẫn có thể sai dữ kiện, thiếu component hoặc chứa list rỗng.
 
 ### Gemini text generation
 
-Lượt AI thứ hai không phân tích lại ảnh mà diễn giải dữ liệu đã được chuẩn hóa.
-Đầu ra được tổ chức theo bốn ý có nghĩa khi nghe: **Tổng quan**, **Số liệu chi
-tiết**, **Phân tích số liệu** và **Nhận định**. Với tiếng Anh, hệ thống dùng các
-nhãn tương ứng bằng tiếng Anh.
+Lượt AI thứ hai không xem lại ảnh. Nó nhận source/target metadata và components;
+overview ban đầu của analyzer bị loại khỏi payload. Prompt yêu cầu bốn đoạn
+**Tổng quan**, **Số liệu chi tiết**, **Phân tích số liệu**, **Nhận định** hoặc nhãn
+Anh tương ứng. Code chưa parse để bảo đảm đủ bốn đoạn hay đúng thứ tự.
 
 ### Hậu xử lý ngôn ngữ
 
-AI vẫn có thể tạo số thứ tự hoặc diễn đạt khác với dữ kiện gốc. Lớp hậu xử lý
-thay các marker `1–4` bằng nhãn có nghĩa, kiểm tra các nhãn/số liệu/quan hệ đã
-được nhắc đến và chỉ bổ sung thông tin thực sự thiếu. Mục tiêu là giữ độ đầy đủ
-mà không làm voice lặp lại máy móc.
+AI vẫn có thể tạo số thứ tự hoặc diễn đạt khác chuỗi structured data. Lớp hậu xử
+lý thay marker `1–4` khớp regex và dùng substring/tập token để quyết định
+fact/relationship nào cần nối thêm. Đây là fallback best-effort; nó không xác
+minh tương đương ngữ nghĩa, factual completeness hoặc việc narrative không lặp.
 
 ### gTTS
 
@@ -75,10 +76,10 @@ người đánh giá có thể đối chiếu.
 
 ### Streamlit và thiết kế giao diện
 
-Streamlit cung cấp luồng sử dụng đơn giản: tải tài liệu, chọn ngôn ngữ đầu ra,
-xem trạng thái, đọc mô tả và phát audio. Giao diện Midnight Aurora sử dụng độ
-tương phản cao, hỗ trợ focus bàn phím và giảm chuyển động để phù hợp hơn với yêu
-cầu accessibility.
+Streamlit cung cấp ba vùng desktop: controls, analysis và document inspector;
+dưới 900px CSS xếp chúng thành một cột. CSS có rule tương phản, `focus-visible`
+và `prefers-reduced-motion`; unit test chỉ kiểm tra source contract của các rule,
+không phải browser rendering, WCAG, keyboard hay screen-reader audit.
 
 ## Luồng công nghệ tổng quát
 
@@ -86,9 +87,9 @@ cầu accessibility.
 Ảnh hoặc PDF
   → chuẩn hóa từng trang
   → AI hiểu nội dung trực quan
-  → dữ liệu có cấu trúc và được kiểm tra
+  → JSON parse được và Pydantic shape validation
   → AI diễn giải thành lời tự nhiên
-  → chuẩn hóa và kiểm tra độ đầy đủ
+  → marker/coverage heuristic
   → văn bản dễ nghe
   → âm thanh MP3
 ```
@@ -96,17 +97,19 @@ cầu accessibility.
 ## Giá trị của cách tiếp cận
 
 - Không dừng ở OCR mà truyền đạt cả cấu trúc và quan hệ của dữ liệu.
-- Tách “đọc đúng” và “nói dễ hiểu” thành hai giai đoạn có thể đánh giá riêng.
+- Tách extraction và narrative thành hai giai đoạn có thể thiết kế đánh giá riêng.
 - Hỗ trợ đầu vào Anh–Nhật–Việt và đầu ra Anh–Việt.
 - Giữ văn bản và voice nhất quán để thuận tiện kiểm chứng.
-- Có thể mở rộng hoặc thay thế mô hình AI/TTS mà không thay đổi mục tiêu nghiệp vụ.
+- Service boundaries cho phép thay provider, nhưng chưa có interface/contract test
+  đầy đủ cho mọi provider thay thế.
 
 ## Giới hạn hiện tại
 
 - Gemini và gTTS cần kết nối Internet.
-- Chất lượng phụ thuộc vào khả năng nhận diện của mô hình AI và chất lượng ảnh.
+- Chất lượng phụ thuộc vào model/ảnh; schema validation không phát hiện factual error.
 - Chưa có bộ dữ liệu đánh giá chính thức, ngưỡng độ chính xác hoặc nghiên cứu với
   người dùng khiếm thị.
-- Chưa có retry, timeout, cache và kiểm soát chi phí API hoàn chỉnh.
+- Chưa có retry, timeout, cache, giới hạn upload/page hoặc kiểm soát chi phí API.
 - Hệ thống hiện hỗ trợ ảnh và PDF; chưa hỗ trợ DOCX.
-
+- PDF được xử lý tuần tự theo trang nhưng inspector chỉ preview trang đầu; chưa có
+  tổng hợp cấp tài liệu.

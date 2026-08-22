@@ -1,5 +1,10 @@
 # Thiết kế tách MVP và codebase chính thức
 
+> **Trạng thái tài liệu:** Artifact lịch sử — foundation này đã hoàn tất ngày
+> 2026-08-03. Danh sách module và data flow bên dưới là thiết kế ban đầu, đã được
+> [kiến trúc hiện hành](../../architecture.md) thay thế. Xem
+> [trạng thái hiện tại](../../process.md); nội dung còn lại được giữ để truy vết.
+
 ## Mục tiêu
 
 Đóng gói Happy Case MVP đã hoàn thành thành tài liệu tham chiếu có thể chạy lại,

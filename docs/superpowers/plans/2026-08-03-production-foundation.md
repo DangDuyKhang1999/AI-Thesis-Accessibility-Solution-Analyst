@@ -1,5 +1,10 @@
 # Production Foundation Implementation Plan
 
+> **Trạng thái tài liệu:** Artifact lịch sử — kế hoạch archive/model foundation
+> đã được thực hiện ngày 2026-08-03 và không còn dùng để theo dõi tiến độ.
+> Checkbox chưa đánh dấu được giữ nguyên như bản kế hoạch gốc. Xem
+> [backlog hiện hành](../../plan.md) và [trạng thái hiện tại](../../process.md).
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Lưu Happy Case MVP vào archive có thể chạy lại và dựng package production đầu tiên với schema mô tả accessibility có cấu trúc.
@@ -14,7 +19,7 @@
 - Model phải biểu diễn bảng dữ liệu, biểu đồ, sơ đồ và layout giao diện.
 - Mô tả phải giữ cấu trúc, quan hệ và điểm nổi bật, không chỉ chứa OCR tuyến tính.
 - Các yêu cầu về input Anh–Nhật–Việt, output Anh/Việt và schema mô tả có cấu trúc chỉ áp dụng cho code production mới trong `src/`. `archive/happy-case-mvp/` được miễn các yêu cầu này và phải giữ nguyên hành vi Happy Case MVP cũ.
-- Key chỉ được đọc từ `.env` ở project root và không được đưa vào archive hoặc Git.
+- Kế hoạch yêu cầu nạp key qua `.env` ở project root và không đưa key vào archive hoặc Git.
 - Code production không được import module từ `archive/`.
 
 ---

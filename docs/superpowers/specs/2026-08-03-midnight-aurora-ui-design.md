@@ -1,5 +1,11 @@
 # Midnight Aurora Glassmorphism UI Design
 
+> **Trạng thái tài liệu:** Artifact lịch sử — thiết kế này đã hoàn tất ngày
+> 2026-08-03. Bố cục hai vùng mô tả bên dưới đã được workspace ba vùng hiện tại
+> thay thế. Xem [kiến trúc hiện hành](../../architecture.md) và
+> [trạng thái hiện tại](../../process.md); nội dung còn lại được giữ để truy vết
+> quyết định tại thời điểm triển khai.
+
 ## Mục tiêu
 
 Thiết kế lại presentation layer của `app.py` theo Glassmorphism chuyên nghiệp,

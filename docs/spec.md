@@ -2,7 +2,8 @@
 id: SPEC-accessibility-solution-analyst
 sources:
   - references/project-request.md
-companions: []
+companions:
+  - references/research-paper-mapping.md
 ---
 
 # Đặc tả hệ thống AI Accessibility Solution Analyst
@@ -13,6 +14,9 @@ Nhân viên khiếm thị gặp khó khăn khi sử dụng dashboard, tài liệ
 bảng thống kê, biểu đồ và giao diện doanh nghiệp vì screen reader chủ yếu đọc
 văn bản theo thứ tự tuyến tính, không truyền đạt được cấu trúc dữ liệu và bố cục.
 Hệ thống phải chuyển nội dung trực quan đó thành mô tả có cấu trúc và âm thanh.
+
+Đây là contract mục tiêu, không phải báo cáo nghiệm thu. Trạng thái implementation
+và validation hiện tại chỉ được duy trì tại [process.md](process.md).
 
 ## Capabilities
 
@@ -51,59 +55,73 @@ tiếng Anh. Ngôn ngữ trong tài liệu không cần chọn thủ công. Hệ
 đầu vào thành từng trang ảnh có thứ tự để cùng một quy trình có thể xử lý cả ảnh
 đơn và PDF nhiều trang.
 
-**Kết quả:** tài liệu đã sẵn sàng để AI phân tích theo từng trang.
+**Kết quả:** `InputDocument` chứa ít nhất một `InputPage` có thứ tự. App xử lý
+từng trang tuần tự; chưa có aggregation ở cấp tài liệu.
 
 ### B. Hiểu nội dung trực quan
 
-AI multimodal quan sát toàn bộ trang, tự phát hiện tiếng Anh, Nhật hoặc Việt và
-xác định các thành phần có ý nghĩa như bảng, biểu đồ, sơ đồ hoặc vùng giao diện.
-Với mỗi thành phần, hệ thống thu thập:
+Prompt yêu cầu AI multimodal quan sát một trang, phát hiện tiếng Anh, Nhật hoặc
+Việt và xác định bảng, biểu đồ, sơ đồ hoặc vùng giao diện. Với mỗi thành phần,
+prompt yêu cầu trả:
 
 - nhãn, số liệu và đơn vị;
 - quan hệ không gian và thứ bậc;
 - trình tự, xu hướng và so sánh;
-- phần nội dung không thể đọc chắc chắn.
+- phần không đọc được được diễn đạt trong text thay vì dùng dấu ba chấm.
 
-**Kết quả:** nội dung trực quan được chuyển thành dữ liệu có cấu trúc, thay vì
-chỉ là chuỗi OCR tuyến tính.
+Schema hiện chỉ có `label`, `facts` và `relationships`; chưa có confidence hoặc
+unreadable-region field. Vì vậy yêu cầu về phần không đọc được là prompt-level,
+không phải trường dữ liệu bắt buộc.
+
+**Kết quả mục tiêu:** JSON mô tả nội dung trực quan thay vì chuỗi OCR tuyến tính.
+Độ đúng của JSON vẫn cần được đánh giá với ground truth.
 
 ### C. Kiểm tra và chuẩn hóa thông tin
 
-Kết quả AI được kiểm tra theo một schema cố định. Ngôn ngữ, loại thành phần, dữ
-kiện và quan hệ phải đúng định dạng trước khi đi tiếp. Bước này tạo một lớp trung
-gian có thể kiểm chứng giữa ảnh gốc và phần mô tả cuối.
+SDK được cấu hình trả MIME JSON; code đọc `response.text`, gọi `json.loads` rồi
+Pydantic hậu kiểm enum, field dư và các constraint đã khai báo. Lists component,
+facts và relationships vẫn có thể rỗng.
 
-**Kết quả:** tập thông tin hợp lệ, có tổ chức và có thể dùng để tạo lời mô tả.
+**Kết quả:** object đúng hình dạng để composition sử dụng. Bước này không đối
+chiếu object với ảnh và không bảo đảm factual accuracy hoặc completeness.
 
 ### D. Diễn giải thành nội dung dễ nghe
 
-Một lượt AI riêng nhận dữ liệu đã chuẩn hóa và viết lại thành lời tự nhiên. Nội
-dung được chia theo ý nghĩa, không đánh số phần:
+Một lượt AI riêng nhận source/target metadata cùng components; overview ban đầu
+của analyzer không được đưa vào payload. Prompt yêu cầu lời tự nhiên theo bốn
+nhãn, không đánh số phần:
 
 - **Tổng quan:** tài liệu hoặc hình ảnh nói về điều gì;
 - **Số liệu chi tiết:** đọc đầy đủ nhãn, giá trị và đơn vị;
 - **Phân tích số liệu:** giải thích xu hướng, cao nhất, thấp nhất và chênh lệch;
 - **Nhận định:** nêu kết luận khách quan dựa trên dữ liệu, không đoán nguyên nhân.
 
-**Kết quả:** người nghe biết đoạn hiện tại đang cung cấp loại thông tin gì, thay
-vì chỉ nghe “một, hai, ba, bốn” không có ngữ cảnh.
+Code không parse để enforce đủ bốn đoạn hoặc đúng thứ tự. Model có thể không tuân
+thủ, và coverage fallback có thể nối thêm đoạn sau nhãn cuối.
+
+**Kết quả mục tiêu:** người nghe biết loại thông tin của từng đoạn thay vì chỉ
+nghe “một, hai, ba, bốn” không có ngữ cảnh.
 
 ### E. Kiểm tra độ đầy đủ và chống lặp
 
-Hệ thống chuẩn hóa các số thứ tự còn sót thành nhãn có nghĩa, sau đó đối chiếu
-phần mô tả với dữ kiện và quan hệ đã trích xuất. Thông tin đã được diễn đạt bằng
-cách viết khác vẫn được xem là đã có; chỉ nội dung thực sự thiếu mới được bổ sung.
+`replace_numbered_sections` thay marker `1–4` chỉ khi regex khớp ở đầu dòng.
+`ensure_fact_coverage` coi item đã có nếu nguyên chuỗi xuất hiện hoặc tập token
+của item nằm trong một passage; item chưa khớp được nối vào narrative.
 
-**Kết quả:** bản mô tả giữ đủ số liệu quan trọng nhưng hạn chế đọc lại cùng một
-ý nhiều lần.
+Đây là heuristic best-effort. Nó không xác định được tương đương ngữ nghĩa, không
+kiểm chứng dữ kiện và có thể nối lặp hoặc bỏ sót nội dung diễn đạt khác từ vựng.
+
+**Kết quả mục tiêu:** giảm bỏ sót chuỗi structured data mà không lặp máy móc.
 
 ### F. Tạo và cung cấp output
 
-Bản mô tả cuối được dùng đồng thời cho phần chữ trên màn hình và công nghệ
-text-to-speech. Hệ thống tạo audio tiếng Việt hoặc tiếng Anh, đồng thời giữ phần
-dữ liệu cấu trúc để người dùng hoặc người chấm có thể mở ra đối chiếu.
+Bản narrative cuối được lưu lại vào `StructuredDescription.summary`,
+`render_description` trả cùng chuỗi cho màn hình và gTTS. Production pipeline chỉ
+tạo `AccessibilityResult` sau khi speech thành công, dù model cho phép audio
+fields là `None` cho các adapter/test khác.
 
-Với PDF nhiều trang, kết quả được tạo theo đúng thứ tự từng trang.
+Với PDF nhiều trang, kết quả được tạo theo đúng thứ tự từng trang; inspector hiện
+chỉ preview trang đầu và chưa có navigation cho các trang sau.
 
 **Output cuối cùng gồm:**
 
@@ -116,10 +134,10 @@ Với PDF nhiều trang, kết quả được tạo theo đúng thứ tự từn
 ```text
 Ảnh hoặc PDF
   → chuẩn hóa tài liệu
-  → AI hiểu nội dung trực quan
-  → chuẩn hóa và kiểm tra thông tin
+  → AI được yêu cầu trích xuất nội dung trực quan
+  → JSON parse + Pydantic shape validation
   → AI diễn giải thành lời tự nhiên
-  → kiểm tra độ đầy đủ và chống lặp
+  → marker/coverage heuristic
   → mô tả cuối
   ├─→ văn bản dễ tiếp cận
   ├─→ âm thanh MP3
@@ -146,18 +164,18 @@ bảng, biểu đồ, sơ đồ và layout bằng ba ngôn ngữ nguồn; hệ t
 trúc bằng Anh hoặc Việt và phát được audio giúp người nghe hiểu nội dung chính
 cùng quan hệ trực quan mà không xem bản gốc.
 
-## Trạng thái triển khai 2026-08-03
+## Ranh giới kiểm chứng
 
-- CAP-1: đã nhận PNG/JPEG/WebP và PDF nhiều trang.
-- CAP-2/CAP-3: Gemini tạo JSON có schema cho table/chart/diagram/layout.
-- CAP-4: pipeline hai lượt tạo bốn đoạn có nhãn ngữ nghĩa: `Tổng quan`, `Số liệu
-  chi tiết`, `Phân tích số liệu`, `Nhận định`; bộ hậu xử lý thay marker `1–4` và
-  chỉ bổ sung dữ kiện thực sự chưa được diễn đạt.
-- CAP-5: AI tự phát hiện input Anh–Nhật–Việt; người dùng chọn output Anh/Việt.
-- CAP-6: gTTS tạo audio MP3 theo ngôn ngữ output.
-- UI: Midnight Aurora Glassmorphism đã áp dụng quy tắc chữ tối trên bề mặt
-  cyan/emerald và chữ sáng trên control nền tối.
-- Chưa có evaluation dataset, rubric và kiểm chứng với người dùng khiếm thị.
+- Các CAP mô tả kết quả mong muốn. Việc có code path tương ứng không đồng nghĩa
+  `success` đã được chứng minh.
+- Pydantic chỉ kiểm tra shape; factual accuracy và structural coverage cần
+  dataset/ground truth.
+- Prompt và heuristic không phải semantic guarantee.
+- CSS source tests không thay thế browser, keyboard, WCAG, NVDA hoặc user study.
+- Mapping bài báo tham khảo và giới hạn suy rộng nằm tại
+  [research-paper-mapping.md](references/research-paper-mapping.md).
+- Bằng chứng hiện có và backlog nằm tại [process.md](process.md) và
+  [plan.md](plan.md).
 
 ## Open Questions
 

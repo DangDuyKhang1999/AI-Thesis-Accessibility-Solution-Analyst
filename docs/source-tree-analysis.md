@@ -1,19 +1,34 @@
-# Phân tích cây nguồn
+# Các vùng chính của repository
 
 ```text
-app.py                         # Production Streamlit entry point
-src/accessibility_analyst/     # Core pipeline, narrative/TTS và UI helpers
-tests/                         # Unit và repository hygiene tests
-archive/happy-case-mvp/        # MVP cũ, độc lập production
-docs/                          # Canonical project documentation
-docs/references/               # Yêu cầu gốc và tài liệu nghiên cứu
-_bmad/                         # BMAD tooling
+README.md                      # Entry point cho người phát triển
+app.py                         # Streamlit workflow production
+src/accessibility_analyst/     # Adapter, schema, AI/TTS, pipeline và UI
+tests/                         # Unit/repository contract tests
+archive/happy-case-mvp/        # Snapshot app cũ, không phải runtime dependency
+docs/                          # Tài liệu canonical và mục lục được guard
+  references/                  # Nguồn gốc, proposal/snapshot lịch sử, paper
+  superpowers/                 # Design/plan triển khai lịch sử có banner
+_bmad/                         # BMAD tooling/config dùng trong repo
 .agents/skills/                # Installed agent skills
+_bmad-output/                  # Artifact làm việc local, bị Git ignore
 ```
 
-Luồng production chỉ đi qua `app.py` và `src/accessibility_analyst/`.
-`archive/happy-case-mvp/` là nơi duy nhất lưu Happy Case cũ và không phải
-dependency runtime của app.
+Đây là bản đồ các vùng có ý nghĩa, không phải listing mọi file/cache. Luồng
+runtime production chỉ đi qua `app.py` và `src/accessibility_analyst/`;
+repository test kiểm tra source này không import `archive`.
 
-Không còn `scripts/legacy/`; các script happy-case trùng lặp đã được xóa. Luồng
-đang phát triển chỉ sử dụng `app.py`, package `src/` và test trong `tests/`.
+Trong `docs/`, [process.md](process.md) là status SSOT; spec/architecture/plan có
+vai trò riêng. `_bmad-output/` chứa spec và review artifact đang làm việc, không
+được index như tài liệu canonical và có thể không tồn tại ở clone khác vì bị
+ignore. Cache, virtual environment, `.env`, runtime logs và trạng thái công cụ
+local cũng không thuộc source tree được version control.
+
+Happy Case có entry point và README riêng dưới `archive/happy-case-mvp/`. Những
+đường dẫn root/`happy_case_vn` trong snapshot ngày 07/06 chỉ là lịch sử và không
+phải lệnh chạy hiện tại.
+
+Root `requirements.txt` và `.env.example` hiện vẫn dùng chung cho cả production
+và archive: `requests`, `pyttsx3` và `HF_TOKEN` chỉ phục vụ Happy Case cũ. Vì
+chưa tách dependency/config archive, cài đặt canonical vẫn kéo theo các mục
+legacy này dù `app.py` và package `src/` không sử dụng chúng.

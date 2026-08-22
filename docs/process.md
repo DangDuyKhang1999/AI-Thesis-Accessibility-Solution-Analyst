@@ -1,83 +1,63 @@
-# Tiến độ hiện tại
+# Trạng thái triển khai hiện tại
 
-**Ngày cập nhật:** 2026-08-03
+- **Ngày đối chiếu:** 2026-08-23
+- **Baseline implementation:** `4e145d03dcc581bddeacf2fab0c7ed5c0fb5feac`
+- **Mức trưởng thành:** MVP chức năng; validation nghiên cứu và accessibility thực tế chưa hoàn tất
+- **Vai trò file:** nguồn trạng thái duy nhất của repository
 
-**Mức trưởng thành:** MVP chức năng đang hoàn thiện chất lượng
+## Implemented
 
-## Ước lượng sơ bộ
+1. `InputAdapter` nhận PNG/JPEG/WebP hoặc render PDF thành `InputPage` PNG theo
+   thứ tự.
+2. `app.py` lặp tuần tự từng trang. Mỗi trang chạy extraction → Pydantic shape
+   validation → composition → heuristic hậu xử lý → gTTS.
+3. UI chỉ cho chọn output Việt/Anh. Prompt analyzer yêu cầu tự nhận diện nguồn
+   Anh/Nhật/Việt khi caller truyền `None`.
+4. Desktop workspace có ba vùng: control rail, analysis workspace và document
+   inspector. Kết quả có audio, narrative và component details theo trang;
+   inspector chỉ preview trang đầu và có popover mở lớn.
+5. Happy Case cũ nằm trong `archive/happy-case-mvp/`; source production không
+   import archive.
 
-| Phạm vi | Tiến độ | Bằng chứng |
-| --- | ---: | --- |
-| Pipeline chức năng theo yêu cầu đề tài | 84% | Ảnh/PDF → JSON cấu trúc → mô tả có nhãn ngữ nghĩa → audio |
-| UI demo | 88% | Midnight Aurora, tương phản đồng bộ, desktop/mobile smoke test |
-| Độ tin cậy và đánh giá nghiên cứu | 25% | Có unit test; chưa có dataset/rubric/user study |
-| Toàn bộ đề tài | 60% | Chức năng chính có, phần đánh giá khoa học còn thiếu |
+## Bằng chứng có thể tái chạy
 
-Các tỷ lệ chỉ để nắm nhanh, không phải số đo nghiệm thu.
+| Phạm vi | Bằng chứng hiện có | Không chứng minh |
+| --- | --- | --- |
+| Schema/model | Pydantic từ chối field dư và chuỗi bắt buộc rỗng trong các case đã test | Dữ kiện đúng với ảnh, components/facts/relationships đầy đủ hoặc không rỗng |
+| Input | Unit test cho bytes không rỗng với image MIME và MIME không hỗ trợ; code path PDF dùng PyMuPDF | Decode/xác thực nội dung ảnh, bộ PDF lỗi/đa trang đại diện, giới hạn kích thước hoặc số trang |
+| Analyzer/pipeline | Fake provider kiểm tra prompt auto-detect, model mặc định, orchestration, text/audio output | Gemini live, độ chính xác nhận diện hoặc dịch thuật |
+| Composition | Test prompt, marker replacement và token/substr coverage heuristic | Tương đương ngữ nghĩa, factual completeness hoặc chất lượng nghe hiểu |
+| UI | Test chuỗi CSS cho tương phản, focus, responsive và inspector ảnh dọc | Browser layout thực, WCAG conformance, keyboard flow hoặc screen reader |
+| Repository/docs | Guard archive boundary; assignment `API_KEY`/`HF_TOKEN` và `load_dotenv` ở hai archive entrypoint; ignore rule, index, link/anchor và banner lịch sử | Scan secret tổng quát trong production, CI trên môi trường khác hoặc deployment |
 
-## Luồng đang chạy
-
-1. `InputAdapter` nhận ảnh hoặc render từng trang PDF thành PNG.
-2. `GeminiAnalyzerClient` tự phát hiện ngôn ngữ Anh/Nhật/Việt và trả JSON theo
-   `StructuredDescription` gồm table/chart/diagram/layout.
-3. `GeminiSummarizer` nhận JSON và viết bốn đoạn: `Tổng quan`, `Số liệu chi
-   tiết`, `Phân tích số liệu`, `Nhận định`; tự gom nhãn lặp theo dữ liệu hiện tại.
-4. Hậu xử lý thay các marker `1–4` nếu model vẫn sinh ra, kiểm tra dữ kiện theo
-   nhãn + giá trị và chỉ bổ sung phần thật sự còn thiếu.
-5. `SpeechService` nhận chính văn bản đã chuẩn hóa và tạo MP3 Việt/Anh.
-6. `app.py` hiển thị preview, mô tả, audio và cấu trúc nhận diện.
-
-## Cách chạy
-
-```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-Copy-Item .env.example .env
-streamlit run app.py
-```
-
-Biến bắt buộc: `GEMINI_API_KEY`. Input source được AI tự phát hiện; người dùng
-chỉ chọn output tiếng Việt hoặc tiếng Anh.
-
-## Kiểm thử hiện tại
+Sau khi thêm bốn documentation guards trong lượt đồng bộ này, suite discovery có
+42 unit/repository contract tests. Con số này là ảnh chụp tại ngày đối chiếu;
+lệnh discovery bên dưới mới là nguồn xác nhận khi suite thay đổi.
 
 ```powershell
 $env:PYTHONPATH="src"
 python -B -m unittest discover -s tests -v
 python -B -m compileall -q app.py src
+python -m pip check
+git diff --check
 ```
 
-Suite hiện có 32 test, bao phủ model validation, input adapter, analyzer giả,
-pipeline, composer prompt, section normalization, chống lặp dữ kiện, UI contrast
-contract và repository hygiene.
+Repo chưa chứa browser E2E, live API test, dataset/ground truth, NVDA audit hoặc
+user study có thể tái chạy.
 
-## Đã hoàn thành
+## Giới hạn đang mở
 
-- Tách MVP cũ vào `archive/happy-case-mvp/`.
-- Dựng package production trong `src/accessibility_analyst/`.
-- Ảnh và PDF nhiều trang; auto-detect Anh/Nhật/Việt.
-- Output mô tả và audio Việt/Anh.
-- Schema cho bảng, biểu đồ, sơ đồ và layout.
-- Pipeline AI hai lượt: extraction rồi composition.
-- Narrative và voice dùng nhãn ngữ nghĩa thay vì đọc số phần `1–4` mơ hồ.
-- Coverage fallback nhận diện dữ kiện đã được diễn đạt khác dấu câu/cách nối từ.
-- UI Glassmorphism responsive, focus/reduced-motion và tương phản thống nhất cho
-  progress, uploader, select, alert, expander và CTA.
-- `.env` bị ignore; test quét credential trong active source.
+- JSON được `json.loads` rồi Pydantic kiểm tra hình dạng; SDK không dùng response
+  schema và không có bước đối chiếu lại ảnh.
+- Coverage fallback dựa trên substring/tập token, có thể bỏ sót hoặc đánh dấu
+  nhầm nội dung đã được diễn đạt.
+- Prompt yêu cầu bốn đoạn và dữ liệu không đọc được, nhưng code không validate
+  đủ bốn đoạn và schema không có confidence/unreadable-region field.
+- `GEMINI_API_KEY` được đọc từ process environment; `.env` ở root chỉ là cách
+  nạp biến thuận tiện qua `load_dotenv`.
+- Gemini và gTTS cần mạng; chưa có retry, timeout, cache, quota/cost telemetry hay
+  phân loại lỗi theo stage.
+- Chưa hỗ trợ DOCX; yêu cầu gốc không chỉ định định dạng file bắt buộc.
 
-## Còn thiếu
-
-- Dataset chuẩn cho từng loại table/chart/diagram/layout và ba ngôn ngữ input.
-- Rubric đo độ đúng dữ kiện, độ đầy đủ cấu trúc và khả năng nghe hiểu.
-- Accessibility audit thực tế bằng keyboard, NVDA và người dùng khiếm thị.
-- Retry/timeout có cấu trúc cho Gemini và gTTS; hiện lỗi được hiển thị chung.
-- Cache kết quả, giới hạn kích thước/số trang PDF và quan sát chi phí API.
-- CI, dependency lock và cấu hình deployment.
-- DOCX chưa hỗ trợ; yêu cầu gốc không chỉ định định dạng bắt buộc.
-
-## Bước tiếp theo
-
-Ưu tiên xây bộ demo/evaluation bao phủ bốn loại component và ba ngôn ngữ input,
-sau đó đo độ đúng và audit screen reader. Không mở rộng chức năng ngoài
-`project-request.md` trước khi có bằng chứng chất lượng cho pipeline hiện tại.
+Backlog và điều kiện nghiệm thu nằm tại [plan.md](plan.md); contract ổn định nằm
+tại [spec.md](spec.md).

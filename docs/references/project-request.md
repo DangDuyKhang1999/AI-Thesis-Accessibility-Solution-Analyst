@@ -1,3 +1,9 @@
+# Yêu cầu đề tài gốc
+
+> **Trạng thái tài liệu:** Nguồn yêu cầu gốc được bảo tồn để truy vết; không phải
+> báo cáo trạng thái hay thiết kế kỹ thuật hiện hành. Xem
+> [đặc tả canonical](../spec.md) và [trạng thái hiện tại](../process.md).
+
 Đề tài: Hệ thống AI giúp chuyển đổi tài liệu và giao diện phần mềm doanh nghiệp thành mô tả âm thanh dễ tiếp cận cho nhân viên khiếm thị.
 Vấn đề: 
 Trong doanh nghiệp thường có dashboard, tài liệu kỹ thuật, ERD, bảng thống kê doanh thu, biểu đồ phân tích dữ liệu,...

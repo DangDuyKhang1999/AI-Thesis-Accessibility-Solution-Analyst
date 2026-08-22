@@ -1,5 +1,11 @@
 # Midnight Aurora UI Implementation Plan
 
+> **Trạng thái tài liệu:** Artifact lịch sử — kế hoạch đã đóng và được workflow
+> hiện tại thay thế. Core UI có implementation, nhưng bước browser smoke bên dưới
+> chưa có artifact tái chạy trong repo và không được xem là đã hoàn tất. Checkbox
+> được giữ nguyên như bản kế hoạch gốc. Xem
+> [backlog hiện hành](../../plan.md) và [trạng thái hiện tại](../../process.md).
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Thay toàn bộ presentation layer của app Streamlit bằng giao diện Midnight Aurora Glassmorphism responsive và dễ tiếp cận.

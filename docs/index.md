@@ -1,41 +1,36 @@
-# Project Documentation Index
+# Mục lục tài liệu dự án
 
-## Tổng quan nhanh
+`docs/process.md` là nguồn duy nhất cho trạng thái triển khai và mức độ kiểm
+chứng hiện tại. `docs/spec.md` giữ contract ổn định; `docs/plan.md` giữ backlog.
+Các file trong `superpowers/` và một số file trong `references/` là artifact lịch
+sử, không phải trạng thái hiện hành.
 
-- **Loại:** Python Streamlit monolith
-- **Entry point:** `app.py`
-- **Kiến trúc:** multimodal AI pipeline/service
-- **Trạng thái:** MVP chức năng; evaluation nghiên cứu chưa hoàn tất
-- **Cập nhật:** 2026-08-03 — narrative/voice có nhãn ngữ nghĩa, chống lặp dữ
-  kiện, UI tương phản đồng bộ và 32 test tự động
+## Tài liệu canonical
 
-## Tài liệu chính
+- **[architecture.md](./architecture.md)** — data flow và ranh giới module hiện tại.
+- **[component-inventory.md](./component-inventory.md)** — lớp, hàm và schema đang có.
+- **[development-guide.md](./development-guide.md)** — setup, validation gate và smoke test thủ công.
+- **[plan.md](./plan.md)** — contract đã triển khai, validation còn thiếu và backlog.
+- **[process.md](./process.md)** — trạng thái duy nhất, bằng chứng và giới hạn.
+- **[project-overview.md](./project-overview.md)** — mục tiêu, phạm vi và stack hiện tại.
+- **[source-tree-analysis.md](./source-tree-analysis.md)** — các vùng runtime, tài liệu và artifact local.
+- **[spec.md](./spec.md)** — contract sản phẩm suy ra từ yêu cầu gốc.
+- **[technology-stack.md](./technology-stack.md)** — vai trò và giới hạn của từng công nghệ.
 
-- **[architecture.md](./architecture.md)** - Kiến trúc pipeline và invariants
-- **[component-inventory.md](./component-inventory.md)** - Module, model và UI helpers
-- **[development-guide.md](./development-guide.md)** - Thiết lập, chạy và kiểm thử
-- **[plan.md](./plan.md)** - Việc hoàn thành và bước tiếp theo
-- **[process.md](./process.md)** - Tiến độ, bằng chứng và khoảng trống
-- **[project-overview.md](./project-overview.md)** - Mục tiêu và công nghệ hiện tại
-- **[source-tree-analysis.md](./source-tree-analysis.md)** - Cấu trúc repository có chú thích
-- **[spec.md](./spec.md)** - Đặc tả chuẩn theo yêu cầu đề tài
-- **[technology-stack.md](./technology-stack.md)** - Tổng quan cách công nghệ giải quyết bài toán accessibility
+## Artifact triển khai lịch sử
 
-## Thiết kế và implementation plans
+- **[Midnight Aurora design](./superpowers/specs/2026-08-03-midnight-aurora-ui-design.md)** — thiết kế hai vùng cũ, đã được UI ba vùng thay thế.
+- **[Production codebase design](./superpowers/specs/2026-08-03-production-codebase-design.md)** — thiết kế foundation đã hoàn tất và được kiến trúc hiện tại thay thế.
+- **[Midnight Aurora plan](./superpowers/plans/2026-08-03-midnight-aurora-ui.md)** — kế hoạch đã đóng/superseded; core UI có code nhưng bước browser smoke chưa có bằng chứng tái chạy.
+- **[Production foundation plan](./superpowers/plans/2026-08-03-production-foundation.md)** — kế hoạch archive/model foundation đã hoàn tất.
 
-- **[Midnight Aurora design](./superpowers/specs/2026-08-03-midnight-aurora-ui-design.md)** - Glassmorphism accessibility UI
-- **[Production codebase design](./superpowers/specs/2026-08-03-production-codebase-design.md)** - Ranh giới archive và production
-- **[Midnight Aurora plan](./superpowers/plans/2026-08-03-midnight-aurora-ui.md)** - Kế hoạch triển khai giao diện
-- **[Production foundation plan](./superpowers/plans/2026-08-03-production-foundation.md)** - Archive và model foundation
+## Nguồn và tài liệu nghiên cứu
 
-## Nguồn tham chiếu
+- **[project-request.md](./references/project-request.md)** — yêu cầu gốc được bảo tồn.
+- **[original-mvp-proposal.md](./references/original-mvp-proposal.md)** — đề xuất kỹ thuật ban đầu, không phải stack hiện tại.
+- **[mvp-happy-case-status-2026-06-07.md](./references/mvp-happy-case-status-2026-06-07.md)** — snapshot Happy Case ngày 07/06/2026.
+- **[research-paper.pdf](./references/research-paper.pdf)** — bản PDF bài báo tham khảo năm 2013.
+- **[research-paper-mapping.md](./references/research-paper-mapping.md)** — citation, capability mapping và giới hạn suy rộng.
 
-- **[project-request.md](./references/project-request.md)** - Yêu cầu gốc và phạm vi chính
-- **[original-mvp-proposal.md](./references/original-mvp-proposal.md)** - Đề xuất MVP ban đầu
-- **[mvp-happy-case-status-2026-06-07.md](./references/mvp-happy-case-status-2026-06-07.md)** - Snapshot MVP lịch sử
-- **[research-paper.pdf](./references/research-paper.pdf)** - Bài báo nghiên cứu tham khảo
-
-## Bắt đầu
-
-Xem [development-guide.md](./development-guide.md), cấu hình `.env`, rồi chạy
-`streamlit run app.py`.
+Mỗi file con của `docs/` phải xuất hiện đúng một lần trong mục lục này; test
+repository hygiene kiểm tra inventory, target và anchor tương đối.
