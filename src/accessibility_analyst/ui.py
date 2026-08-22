@@ -77,6 +77,25 @@ def midnight_aurora_css() -> str:
         color:var(--text) !important; }
     [data-testid="stAlert"] p,[data-testid="stAlert"] svg { color:var(--text) !important;fill:currentColor; }
     [data-testid="stImage"] img { border-radius:17px;box-shadow:0 16px 45px rgba(0,0,0,.25); }
+    .st-key-control_rail,.st-key-analysis_workspace,.st-key-document_inspector {
+        min-height:min(680px,calc(100vh - 190px)) !important;
+    }
+    .st-key-document_stage {
+        height:min(54vh,540px) !important;max-height:min(54vh,540px) !important;
+        display:flex;align-items:center;justify-content:center;overflow:hidden !important;
+        border-radius:15px;background:rgba(3,13,24,.42);padding:.65rem;
+    }
+    .st-key-document_stage [data-testid="stImage"] { width:100%;height:100%;display:flex;align-items:center;justify-content:center; }
+    .st-key-document_stage [data-testid="stImage"] > div { width:100%;height:100%;display:flex;align-items:center;justify-content:center; }
+    .st-key-document_stage [data-testid="stImage"] img {
+        display:block;width:auto !important;max-width:100% !important;height:auto !important;
+        max-height:min(50vh,500px) !important;margin:auto;object-fit:contain;
+    }
+    .st-key-document_inspector [data-testid="stPopover"] button {
+        width:100%;border:1px solid var(--border);background:rgba(6,17,31,.78);color:var(--text) !important;
+    }
+    .st-key-document_inspector [data-testid="stPopover"] button p,
+    .st-key-document_inspector [data-testid="stPopover"] button svg { color:var(--text) !important;fill:currentColor; }
     [data-testid="stExpander"] { background:rgba(7,21,36,.44);border:1px solid var(--border);border-radius:16px;overflow:hidden; }
     [data-testid="stExpander"] summary,[data-testid="stExpander"] summary p,[data-testid="stExpander"] summary svg {
         color:var(--text) !important;fill:currentColor; }

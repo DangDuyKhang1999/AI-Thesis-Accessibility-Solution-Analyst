@@ -36,6 +36,23 @@ class MidnightAuroraUiTests(unittest.TestCase):
         self.assertIn('[data-baseweb="select"]', css)
         self.assertIn('color:var(--text) !important;', css)
 
+    def test_desktop_workspace_contains_three_named_regions(self):
+        css = midnight_aurora_css()
+        self.assertIn('.st-key-control_rail,.st-key-analysis_workspace,.st-key-document_inspector', css)
+        self.assertIn('min-height:min(680px,calc(100vh - 190px)) !important', css)
+
+    def test_document_inspector_fits_tall_images_without_inner_scrolling(self):
+        css = midnight_aurora_css()
+        self.assertIn('.st-key-document_stage {', css)
+        self.assertIn('height:min(54vh,540px) !important', css)
+        self.assertIn('overflow:hidden !important', css)
+        self.assertIn('max-width:100% !important', css)
+        self.assertIn('height:auto !important', css)
+        self.assertIn('max-height:min(50vh,500px) !important', css)
+        self.assertIn('object-fit:contain', css)
+        self.assertIn('.st-key-document_inspector [data-testid="stPopover"] button', css)
+        self.assertNotIn('.st-key-document_preview', css)
+
 
 if __name__ == "__main__":
     unittest.main()
