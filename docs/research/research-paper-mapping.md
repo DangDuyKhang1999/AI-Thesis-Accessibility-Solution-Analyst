@@ -53,4 +53,4 @@ Paper cũng không chứng minh:
 
 Vì vậy paper là cơ sở định hướng cho structured description + audio và nhu cầu
 active exploration, không phải acceptance evidence. Trạng thái validation của
-dự án nằm tại [process.md](../process.md) và backlog tại [plan.md](../plan.md).
+dự án và backlog nằm tại [status.md](../status.md).

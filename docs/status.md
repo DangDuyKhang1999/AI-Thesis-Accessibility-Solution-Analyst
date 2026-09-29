@@ -1,6 +1,6 @@
-# Trạng thái triển khai hiện tại
+# Trạng thái và backlog
 
-- **Ngày đối chiếu:** 2026-08-23
+- **Ngày đối chiếu:** 2026-09-29
 - **Baseline implementation:** `4e145d03dcc581bddeacf2fab0c7ed5c0fb5feac`
 - **Mức trưởng thành:** MVP chức năng; validation nghiên cứu và accessibility thực tế chưa hoàn tất
 - **Vai trò file:** nguồn trạng thái duy nhất của repository
@@ -28,10 +28,10 @@
 | Analyzer/pipeline | Fake provider kiểm tra prompt auto-detect, model mặc định, orchestration, text/audio output | Gemini live, độ chính xác nhận diện hoặc dịch thuật |
 | Composition | Test prompt, marker replacement và token/substr coverage heuristic | Tương đương ngữ nghĩa, factual completeness hoặc chất lượng nghe hiểu |
 | UI | Test chuỗi CSS cho tương phản, focus, responsive và inspector ảnh dọc | Browser layout thực, WCAG conformance, keyboard flow hoặc screen reader |
-| Repository/docs | Guard archive boundary; assignment `API_KEY`/`HF_TOKEN` và `load_dotenv` ở hai archive entrypoint; ignore rule, index, link/anchor và banner lịch sử | Scan secret tổng quát trong production, CI trên môi trường khác hoặc deployment |
+| Repository/docs | Guard archive boundary; assignment `API_KEY`/`HF_TOKEN` và `load_dotenv` ở hai archive entrypoint; ignore rule, index, link/anchor và banner nguồn nghiên cứu | Scan secret tổng quát trong production, CI trên môi trường khác hoặc deployment |
 
-Sau khi thêm bốn documentation guards trong lượt đồng bộ này, suite discovery có
-42 unit/repository contract tests. Con số này là ảnh chụp tại ngày đối chiếu;
+Tại baseline, suite discovery có 42 unit/repository contract tests. Con số này
+là ảnh chụp tại ngày đối chiếu;
 lệnh discovery bên dưới mới là nguồn xác nhận khi suite thay đổi.
 
 ```powershell
@@ -59,5 +59,43 @@ user study có thể tái chạy.
   phân loại lỗi theo stage.
 - Chưa hỗ trợ DOCX; yêu cầu gốc không chỉ định định dạng file bắt buộc.
 
-Backlog và điều kiện nghiệm thu nằm tại [plan.md](plan.md); contract ổn định nằm
-tại [spec.md](spec.md).
+## Backlog validation nghiên cứu
+
+- [ ] Chuẩn bị bộ mẫu table/chart/diagram/layout bằng nguồn Anh, Nhật và Việt.
+- [ ] Ghi ground truth cho label, giá trị, đơn vị, quan hệ, thứ bậc và vùng không
+  xác định được.
+- [ ] Định nghĩa rubric và ngưỡng đạt cho factual accuracy, structural coverage,
+  translation fidelity và listening clarity.
+- [ ] Tách đánh giá extraction khỏi narrative/TTS và lưu kết quả định lượng với
+  model/version cố định.
+
+## Backlog reliability
+
+- [ ] Giới hạn dung lượng upload và số trang PDF.
+- [ ] Thêm timeout/retry cho extraction, composition và gTTS.
+- [ ] Phân loại lỗi input, JSON, schema, composition và speech ở UI.
+- [ ] Cache theo file hash, target language và model version.
+- [ ] Theo dõi latency, request count và chi phí/quota mà không log dữ liệu nhạy cảm.
+- [ ] Kiểm tra nhất quán source/target language tại model boundary.
+
+## Backlog accessibility
+
+- [ ] Kiểm thử keyboard flow và audit NVDA trên Windows.
+- [ ] Kiểm tra flow input → status → audio/narrative → component details → inspector.
+- [ ] Đánh giá với người dùng mục tiêu theo phương pháp và consent rõ ràng.
+- [ ] Xác định active exploration theo trường dữ liệu có cần thiết cho nghiệm thu,
+  hay narrative thụ động đã đủ.
+
+## Backlog delivery
+
+- [ ] Thêm dependency lock, CI và browser E2E có thể tái chạy.
+- [ ] Chỉ tạo cấu hình deployment sau khi evaluation đạt ngưỡng.
+
+## Điều kiện hoàn thành
+
+MVP nghiên cứu chỉ được xem là đạt khi chạy trên dataset đại diện, có số đo
+factual/structural rõ ràng, narrative và audio Việt/Anh được đánh giá, đồng thời
+lưu kết quả keyboard, screen-reader và user validation bằng phương pháp có thể
+kiểm tra. Unit test hiện tại là điều kiện cần, không phải bằng chứng nghiệm thu.
+
+Contract ổn định nằm tại [spec.md](spec.md).

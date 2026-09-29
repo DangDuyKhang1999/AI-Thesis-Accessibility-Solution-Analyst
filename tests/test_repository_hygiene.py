@@ -296,16 +296,18 @@ class RepositoryHygieneTests(unittest.TestCase):
 
     def test_canonical_project_documentation_exists(self) -> None:
         expected = {
+            ROOT / "docs" / "README.md",
             ROOT / "docs" / "spec.md",
-            ROOT / "docs" / "plan.md",
-            ROOT / "docs" / "process.md",
+            ROOT / "docs" / "architecture.md",
+            ROOT / "docs" / "development.md",
+            ROOT / "docs" / "status.md",
         }
 
         self.assertEqual(set(), {path for path in expected if not path.is_file()})
 
     def test_documentation_index_covers_every_file_once(self) -> None:
         docs_root = ROOT / "docs"
-        index = docs_root / "index.md"
+        index = docs_root / "README.md"
         inventory_result = subprocess.run(
             [
                 "git",
@@ -430,15 +432,10 @@ class RepositoryHygieneTests(unittest.TestCase):
 
         self.assertEqual([], failures)
 
-    def test_historical_and_reference_documents_have_status_banners(self) -> None:
-        historical = {
-            *sorted((ROOT / "docs" / "superpowers").rglob("*.md")),
-            ROOT / "docs" / "references" / "original-mvp-proposal.md",
-            ROOT / "docs" / "references" / "mvp-happy-case-status-2026-06-07.md",
-        }
-        references = set((ROOT / "docs" / "references").rglob("*.md"))
+    def test_research_documents_have_status_banners(self) -> None:
+        references = set((ROOT / "docs" / "research").rglob("*.md"))
 
-        for source in historical | references:
+        for source in references:
             opening = "\n".join(
                 _visible_markdown(source.read_text(encoding="utf-8")).splitlines()[:12]
             )
@@ -458,15 +455,9 @@ class RepositoryHygieneTests(unittest.TestCase):
                     banner.append(line)
                 banner_text = "\n".join(banner)
                 self.assertTrue(list(_markdown_destinations(banner_text)))
-                if source in historical:
-                    self.assertIn("Artifact lịch sử", banner_text)
-
     def test_current_documentation_has_one_status_source_and_no_stale_claims(self) -> None:
         historical = {
-            *sorted((ROOT / "docs" / "superpowers").rglob("*.md")),
-            ROOT / "docs" / "references" / "project-request.md",
-            ROOT / "docs" / "references" / "original-mvp-proposal.md",
-            ROOT / "docs" / "references" / "mvp-happy-case-status-2026-06-07.md",
+            *sorted((ROOT / "docs" / "research").rglob("*.md")),
         }
         canonical = [
             ROOT / "README.md",
@@ -496,7 +487,7 @@ class RepositoryHygieneTests(unittest.TestCase):
             re.IGNORECASE,
         )
         failures = []
-        process = ROOT / "docs" / "process.md"
+        process = ROOT / "docs" / "status.md"
         for source in canonical:
             content = _visible_markdown(source.read_text(encoding="utf-8"))
             for label, pattern in stale_patterns.items():

@@ -1,9 +1,9 @@
 ---
 id: SPEC-accessibility-solution-analyst
 sources:
-  - references/project-request.md
+  - research/project-request.md
 companions:
-  - references/research-paper-mapping.md
+  - research/research-paper-mapping.md
 ---
 
 # Đặc tả hệ thống AI Accessibility Solution Analyst
@@ -16,7 +16,7 @@ văn bản theo thứ tự tuyến tính, không truyền đạt được cấu 
 Hệ thống phải chuyển nội dung trực quan đó thành mô tả có cấu trúc và âm thanh.
 
 Đây là contract mục tiêu, không phải báo cáo nghiệm thu. Trạng thái implementation
-và validation hiện tại chỉ được duy trì tại [process.md](process.md).
+và validation hiện tại chỉ được duy trì tại [status.md](status.md).
 
 ## Capabilities
 
@@ -173,9 +173,8 @@ cùng quan hệ trực quan mà không xem bản gốc.
 - Prompt và heuristic không phải semantic guarantee.
 - CSS source tests không thay thế browser, keyboard, WCAG, NVDA hoặc user study.
 - Mapping bài báo tham khảo và giới hạn suy rộng nằm tại
-  [research-paper-mapping.md](references/research-paper-mapping.md).
-- Bằng chứng hiện có và backlog nằm tại [process.md](process.md) và
-  [plan.md](plan.md).
+  [research-paper-mapping.md](research/research-paper-mapping.md).
+- Bằng chứng hiện có và backlog nằm tại [status.md](status.md).
 
 ## Open Questions
 

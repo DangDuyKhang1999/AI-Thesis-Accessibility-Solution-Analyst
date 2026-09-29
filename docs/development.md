@@ -1,4 +1,21 @@
-# Hướng dẫn phát triển
+# Phát triển dự án
+
+## Cấu trúc repository
+
+```text
+README.md                      # Điểm bắt đầu cho người phát triển
+app.py                         # Streamlit workflow production
+src/accessibility_analyst/     # Model, adapter, AI/TTS, pipeline và UI
+tests/                         # Unit và repository contract tests
+archive/happy-case-mvp/        # Snapshot app cũ, không phải runtime dependency
+docs/                          # Tài liệu hiện hành và nguồn nghiên cứu
+  research/                    # Yêu cầu gốc, bài báo và mapping nghiên cứu
+_bmad/                         # BMAD tooling/config
+_bmad-output/                  # Artifact local, bị Git ignore
+```
+
+Runtime production chỉ đi qua `app.py` và `src/accessibility_analyst/`. Source
+production không import `archive/`; repository test bảo vệ ranh giới này.
 
 ## Thiết lập
 
@@ -35,7 +52,7 @@ git diff --check
 
 Đây là unit/repository contract gate. Nó không gọi Gemini/gTTS thật và không thay
 thế browser E2E, factual evaluation hoặc accessibility audit. Kết quả/giới hạn
-hiện hành nằm tại [process.md](process.md).
+hiện hành nằm tại [status.md](status.md).
 
 Chạy targeted test khi phát triển:
 
@@ -54,7 +71,7 @@ python -B -m unittest tests.test_ui -v
 - UI thay đổi trong `src/accessibility_analyst/ui.py`; logic pipeline không đặt
   trong CSS/markup.
 - Thêm dependency runtime vào `requirements.txt`.
-- Khi thêm, đổi tên hoặc xóa file trong `docs/`, cập nhật `docs/index.md` đúng một
+- Khi thêm, đổi tên hoặc xóa file trong `docs/`, cập nhật `docs/README.md` đúng một
   target; guard sẽ kiểm tra link và heading anchor.
 - Claim chất lượng phải chỉ rõ bằng chứng. Dùng “prompt yêu cầu” hoặc “heuristic”
   khi code không enforce semantics.

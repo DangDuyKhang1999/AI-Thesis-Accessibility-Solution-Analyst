@@ -1,5 +1,25 @@
 # Kiến trúc hiện tại
 
+## Tổng quan công nghệ
+
+Hệ thống là một Streamlit monolith có các service boundary rõ ràng trong package
+Python. Pipeline dùng Gemini hai lần: lượt đầu phân tích hình ảnh thành dữ liệu có
+cấu trúc, lượt sau diễn giải dữ liệu đó thành narrative dễ nghe. Pydantic kiểm tra
+hình dạng dữ liệu giữa hai lượt; gTTS chuyển narrative cuối thành MP3.
+
+| Tầng | Công nghệ | Vai trò |
+| --- | --- | --- |
+| Giao diện | Streamlit | Upload, lựa chọn ngôn ngữ và trình bày kết quả |
+| Tài liệu | PyMuPDF | Render PDF thành các trang PNG |
+| Phân tích | Google Gen AI SDK, Gemini | Nhận diện ngôn ngữ, component, dữ kiện và quan hệ |
+| Kiểm tra shape | `json.loads`, Pydantic 2 | Parse JSON và kiểm tra schema; không xác minh factual accuracy |
+| Diễn giải | Gemini và hậu xử lý heuristic | Tạo narrative có nhãn và giảm bỏ sót chuỗi dữ kiện |
+| Âm thanh | gTTS | Tạo MP3 tiếng Việt hoặc tiếng Anh |
+| Kiểm thử | `unittest` | Unit test và repository contract test |
+
+Việc tách extraction và composition tạo ranh giới để đánh giá hai giai đoạn độc
+lập. Repository hiện chưa có dataset hoặc rubric thực hiện phép đánh giá đó.
+
 ## Data flow theo trang
 
 ```text
@@ -22,8 +42,7 @@ sách result sau khi toàn bộ vòng lặp trang thành công; lỗi ở trang 
 thị. Inspector chỉ hiển thị ảnh tham chiếu của trang đầu.
 
 Luồng nghiệp vụ chi tiết nằm tại
-[spec.md](spec.md#luồng-hoạt-động-chi-tiết); vai trò công nghệ nằm tại
-[technology-stack.md](technology-stack.md).
+[spec.md](spec.md#luồng-hoạt-động-chi-tiết).
 
 ## Ranh giới module
 
@@ -41,6 +60,22 @@ Luồng nghiệp vụ chi tiết nằm tại
 - `pipeline.py`: điều phối một trang, không chứa Streamlit.
 - `ui.py`: CSS/presentation helpers Midnight Aurora.
 - `app.py`: process environment, widgets, vòng lặp trang, lỗi và presentation.
+
+## Thành phần chính
+
+- `InputAdapter`: nhận PNG/JPEG/WebP hoặc render PDF thành các `InputPage` PNG.
+- `GeminiAnalyzerClient`: gọi Gemini multimodal và parse JSON response.
+- `VisualAnalyzer`: kiểm tra response qua `StructuredDescription`.
+- `GeminiSummarizer`: tạo narrative từ structured components.
+- `replace_numbered_sections` và `ensure_fact_coverage`: hậu xử lý best-effort.
+- `SpeechService`: tạo MP3 bằng gTTS.
+- `AccessibilityPipeline`: điều phối analyzer, summarizer, renderer và speech.
+- `midnight_aurora_css` cùng các UI helper: presentation cho Streamlit.
+
+Các model trung tâm gồm `InputDocument`, `InputPage`, `VisualComponent`,
+`StructuredDescription` và `AccessibilityResult`. Schema cấm field dư và một số
+chuỗi rỗng, nhưng component/fact list vẫn có thể rỗng và chưa có confidence hoặc
+unreadable-region field.
 
 ## Contract thực tế
 

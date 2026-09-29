@@ -17,9 +17,9 @@ quan có cấu trúc, bản mô tả Anh/Việt và audio hỗ trợ người kh
 - UI desktop có ba vùng: điều khiển, kết quả phân tích và ảnh tham chiếu. Mọi
   trang được xử lý tuần tự, nhưng inspector hiện chỉ preview trang đầu.
 
-Trạng thái kiểm chứng và giới hạn hiện hành chỉ được duy trì tại
-[docs/process.md](docs/process.md); backlog nằm tại [docs/plan.md](docs/plan.md).
-Mục lục đầy đủ nằm ở [docs/index.md](docs/index.md).
+Trạng thái, giới hạn và backlog chỉ được duy trì tại
+[docs/status.md](docs/status.md). Mục lục đầy đủ nằm ở
+[docs/README.md](docs/README.md).
 
 ## Cài đặt và chạy
 
@@ -54,7 +54,7 @@ NVDA audit, user study hoặc dataset đánh giá factual accuracy có thể tá
 - `app.py`: entry point và workflow Streamlit.
 - `src/accessibility_analyst/`: adapter, schema, AI services, TTS, pipeline và UI.
 - `tests/`: unit/repository contract tests.
-- `docs/`: tài liệu canonical, nguồn gốc và artifact lịch sử có nhãn.
+- `docs/`: đặc tả, kiến trúc, hướng dẫn phát triển, trạng thái và nguồn nghiên cứu.
 - `archive/happy-case-mvp/`: MVP cũ để đối chiếu; production không import.
 - `_bmad-output/`: artifact làm việc local, bị Git ignore và không phải nguồn
   trạng thái dự án.
